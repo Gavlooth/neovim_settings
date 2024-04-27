@@ -30,17 +30,22 @@ endfunction
 
 "Dependencies
 
+Plug 'folke/lazy.nvim'
+
 Plug 'kdheepak/lazygit.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'voldikss/vim-floaterm'
 
- Plug 'ahmedkhalf/project.nvim'
+Plug 'ahmedkhalf/project.nvim'
 
-
+"gpt
+Plug 'MunifTanjim/nui.nvim'
+Plug 'jackMort/ChatGPT.nvim'
 "neogit
 
 Plug 'kabouzeid/nvim-lspinstall'
 Plug 'neovim/nvim-lspconfig'
+"Completion
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
@@ -69,7 +74,7 @@ Plug 'Olical/aniseed'
 
 Plug 'axelf4/vim-strip-trailing-whitespace'
 
-Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
+" Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
 
 Plug 'kyazdani42/nvim-web-devicons'
 
@@ -77,8 +82,6 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend upda
 
 Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 
-
-Plug 'NTBBloodbath/zig-tools.nvim'
 
 Plug 'vim-syntastic/syntastic'
 " Plug 'aclaimant/syntastic-joker'
@@ -177,6 +180,10 @@ Plug 'nanotee/sqls.nvim'
 " multiple cursors
 Plug 'mg979/vim-visual-multi'
 
+"Vim sneak like
+Plug 'folke/flash.nvim'
+
+"Plug 'ggandor/leap.nvim'
 "Haskell
 Plug 'neovimhaskell/haskell-vim'
 Plug 'owickstrom/neovim-ghci'
@@ -351,8 +358,8 @@ nmap - :resize -2<CR>
 
 nnoremap <SPACE> <Nop>
 nnoremap Q <Nop>
-nnoremap s <Nop>
-nnoremap S <Nop>
+" nnoremap s <Nop>
+" nnoremap S <Nop>
 
 
 let mapleader=" "
@@ -719,6 +726,7 @@ let  g:AutoPairs= {'(':')', '[':']', '{':'}','"':'"',  '```':'```', '"""':'"""',
 let g:LanguageClient_serverCommands = {
 \ 'rust': ['rust-analyzer'],
 \ 'sql': ['sql-language-server', 'up', '--method', 'stdio'],
+\ 'zig': ['zls'],
 \ }
 
 
@@ -782,7 +790,7 @@ lua << EOF
 
 require'nvim-treesitter.configs'.setup {
   -- One of "all", "maintained" (parsers with maintainers), or a list of languages
-  ensure_installed = {"clojure", "lua", "rust",  "java",  "kotlin"}  ,
+  ensure_installed = {"clojure", "lua", "rust",  "java",  "kotlin", "zig"}  ,
 
   -- Install languages synchronously (only applied to `ensure_installed`)
   sync_install = false,
@@ -865,17 +873,17 @@ let g:vimwiki_list = [{'path': '~/.local/share/vimwiki/'}]
 "  let g:coq_settings = { "keymap.recommended": v:false,"display.pum.fast_close": v:false  }
 
 
-let g:coq_settings = { "keymap.recommended": v:false}
+" let g:coq_settings = { "keymap.recommended": v:false}
 
 
  " Keybindings
-ino <silent><expr> <Esc>   pumvisible() ? "\<C-e><Esc>" : "\<Esc>"
-ino <silent><expr> <C-c>   pumvisible() ? "\<C-e><C-c>" : "\<C-c>"
-ino <silent><expr> <BS>    pumvisible() ? "\<C-e><BS>"  : "\<BS>"
-ino <silent><expr> <CR>    pumvisible() ? (complete_info().selected == -1 ? "\<C-e><CR>" : "\<C-y>") : "\<CR>"
-ino <silent><expr> <CR>    pumvisible() ? (complete_info().selected == -1 ? "\<C-e><CR>" : "\<C-y>") : "\<CR>"
-ino <silent><expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
-ino <silent><expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<BS>"
+"ino <silent><expr> <Esc>   pumvisible() ? "\<C-e><Esc>" : "\<Esc>"
+"ino <silent><expr> <C-c>   pumvisible() ? "\<C-e><C-c>" : "\<C-c>"
+"ino <silent><expr> <BS>    pumvisible() ? "\<C-e><BS>"  : "\<BS>"
+"ino <silent><expr> <CR>    pumvisible() ? (complete_info().selected == -1 ? "\<C-e><CR>" : "\<C-y>") : "\<CR>"
+"ino <silent><expr> <CR>    pumvisible() ? (complete_info().selected == -1 ? "\<C-e><CR>" : "\<C-y>") : "\<CR>"
+"ino <silent><expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+"ino <silent><expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<BS>"
 
 
 
@@ -1070,7 +1078,7 @@ lua <<EOF
         -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
       end,
     },
-    window = {
+    window = { experimental = { ghost_text = false },
       -- completion = cmp.config.window.bordered(),
       -- documentation = cmp.config.window.bordered(),
       },
@@ -1218,11 +1226,39 @@ require('gitsigns').setup {
     -- Text object
     map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
   end
+
+};
+local config = {
+        api_key_cmd="",
+        -- api_host_cmd="echo '10.1.0.1:31416'",
+        -- extra_curl_params = { "--cacert","C:\\Users\\chris\\.ssh\\local\\local.chat-gpt-key.pem", "--insecure"},
+     openai_params = {
+      model = "gpt-3.5-turbo",
+      frequency_penalty = 0,
+      presence_penalty = 0,
+      max_tokens = 1500,
+      temperature = 0,
+      top_p = 1,
+      n = 1,
+    }
+
 }
+---require("lazy").setup(
+---{
+---  "folke/flash.nvim",
+---  event = "VeryLazy",
+---  ---@type Flash.Config
+---  opts = {},
+---  -- stylua: ignore
+---  keys = {
+---    { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+---    { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+---    { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+---    { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+---    { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+---  },
+---} )
 
 
 
 EOF
-
-
-
