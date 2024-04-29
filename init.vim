@@ -32,69 +32,407 @@ endfunction
 
 Plug 'folke/lazy.nvim'
 
-Plug 'kdheepak/lazygit.nvim'
-Plug 'nvim-lua/plenary.nvim'
-Plug 'voldikss/vim-floaterm'
+lua <<EOF
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", -- latest stable release
+    lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
+
+
+local chatgpt_config  = {
+        api_key_cmd= "openssl enc -in C:\\Users\\chris\\AppData\\Local\\nvim\\openai.secret -d -pbkdf2 -k symmetrickey",
+        -- api_host_cmd="echo 10.1.0.1:31416",
+        -- extra_curl_params = { "--cacert","/home/vainamietzsche/.ssh/api.openai.com+3.pem"},
+        openai_params = {
+                model = "gpt-3.5-turbo",
+                frequency_penalty = 0,
+                presence_penalty = 0,
+                max_tokens = 1500,
+                temperature = 0,
+                top_p = 1,
+                n = 1,
+        }
+        }
+
+
+require("lazy").setup ({"nvim-lua/plenary.nvim","kabouzeid/nvim-lspinstall", "dgagn/diagflow.nvim", 'jvgrootveld/telescope-zoxide',
+'kdheepak/lazygit.nvim',  "vim-syntastic/syntastic",
+"HiPhish/rainbow-delimiters.nvim" ,
+"RRethy/vim-hexokinase",
+"m4xshen/autoclose.nvim",
+'nvim-lua/plenary.nvim',
+'voldikss/vim-floaterm',
+  'dawsers/telescope-floaterm.nvim',
+  'jvgrootveld/telescope-zoxide',
+  'nanotee/zoxide.vim',
+"axelf4/vim-strip-trailing-whitespace" ,
+"hrsh7th/cmp-vsnip", "hrsh7th/vim-vsnip", "hrsh7th/cmp-nvim-lsp",
+"sindrets/diffview.nvim","Olical/nvim-local-fennel", 'Olical/aniseed' ,
+"neovim/nvim-lspconfig","lewis6991/gitsigns.nvim",
+"voldikss/vim-floaterm",'hrsh7th/cmp-buffer'  , 'hrsh7th/cmp-path' ,"hrsh7th/cmp-cmdline" ,'hrsh7th/nvim-cmp',
+{"nvim-telescope/telescope-project.nvim", dependencies={"nvim-telescope/telescope.nvim"}},  {"nvim-telescope/telescope-fzy-native.nvim",  dependencies={"nvim-telescope/telescope.nvim"}},
+{"VonHeikemen/fine-cmdline.nvim", dependencies={"MunifTanjim/nui.nvim"}},
+{"VonHeikemen/searchbox.nvim", dependencies={"MunifTanjim/nui.nvim"}}, 
+{ 'nvim-treesitter/nvim-treesitter',  cmd="TSUpdate"}, "nvim-treesitter/nvim-treesitter-textobjects",
+
+ {
+    'nvim-lualine/lualine.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' }
+},
+
+ {
+  "jackMort/ChatGPT.nvim",
+    event = "VeryLazy",
+    config = function()
+      require("chatgpt").setup(chatgpt_config)
+    end,
+    dependencies = {
+      "MunifTanjim/nui.nvim",
+      "nvim-lua/plenary.nvim",
+      "folke/trouble.nvim",
+      "nvim-telescope/telescope.nvim"
+    }
+} ,
+
+ {
+                 "numToStr/Comment.nvim",
+                 opts =
+
+                 {
+                                 ---Add a space b/w comment and the line
+                                 padding = true,
+                                 ---Whether the cursor should stay at its position
+                                 sticky = true,
+                                 ---Lines to be ignored while (un)comment
+                                 ignore = nil,
+                                 ---LHS of toggle mappings in NORMAL mode
+                                 toggler = {
+                                         ---Line-comment toggle keymap
+                                         line = 'gcc',
+                                         ---Block-comment toggle keymap
+                                         block = 'gbc',
+                                 },
+                                 ---LHS of operator-pending mappings in NORMAL and VISUAL mode
+                                 opleader = {
+                                         ---Line-comment keymap
+                                         line = 'gc',
+                                         ---Block-comment keymap
+                                         block = 'gb',
+                                 },
+                                 ---LHS of extra mappings
+                                 extra = {
+                                         ---Add comment on the line above
+                                         above = 'gcO',
+                                         ---Add comment on the line below
+                                         below = 'gco',
+                                         ---Add comment at the end of line
+                                         eol = 'gcA',
+                                 },
+                                 ---Enable keybindings
+                                 ---NOTE: If given `false` then the plugin won't create any mappings
+                                 mappings = {
+                                         ---Operator-pending mapping; `gcc` `gbc` `gc[count]{motion}` `gb[count]{motion}`
+                                         basic = true,
+                                         ---Extra mapping; `gco`, `gcO`, `gcA`
+                                         extra = true,
+                                 },
+                                 ---Function to call before (un)comment
+                                 pre_hook = nil,
+                                 ---Function to call after (un)comment
+                                 post_hook = nil,
+                                 } ,
+                 lazy = false,
+                 },
+ {
+  "brenton-leighton/multiple-cursors.nvim",
+  version = "*",  -- Use the latest tagged version
+  opts = {},  -- This causes the plugin setup function to be called
+  keys = {
+    {"<C-j>", "<Cmd>MultipleCursorsAddDown<CR>", mode = {"n", "x"}},
+    {"<C-Down>", "<Cmd>MultipleCursorsAddDown<CR>", mode = {"n", "i", "x"}},
+    {"<C-k>", "<Cmd>MultipleCursorsAddUp<CR>", mode = {"n", "x"}},
+    {"<C-Up>", "<Cmd>MultipleCursorsAddUp<CR>", mode = {"n", "i", "x"}},
+    {"<C-LeftMouse>", "<Cmd>MultipleCursorsMouseAddDelete<CR>", mode = {"n", "i"}},
+    {"<Leader>a", "<Cmd>MultipleCursorsAddMatches<CR>", mode = {"n", "x"}},
+  },
+}
+
+});
+require("autoclose").setup()
+local rainbow_delimiters = require("rainbow-delimiters" )
+
+---@type rainbow_delimiters.config
+vim.g.rainbow_delimiters = {
+    strategy = {
+        [''] = rainbow_delimiters.strategy['global'],
+        vim = rainbow_delimiters.strategy['local'],
+    },
+    query = {
+        [''] = 'rainbow-delimiters',
+        lua = 'rainbow-blocks',
+    },
+    priority = {
+        [''] = 110,
+        lua = 210,
+    },
+    highlight = {
+        'RainbowDelimiterRed',
+        'RainbowDelimiterYellow',
+        'RainbowDelimiterBlue',
+        'RainbowDelimiterOrange',
+        'RainbowDelimiterGreen',
+        'RainbowDelimiterViolet',
+        'RainbowDelimiterCyan',
+    },
+}
+
+
+  -- Set up nvim-cmp.
+  local cmp = require'cmp'
+
+  cmp.setup({
+    snippet = {
+      -- REQUIRED - you must specify a snippet engine
+      expand = function(args)
+        vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+        -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+        -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
+        -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+      end,
+    },
+    window = { experimental = { ghost_text = false },
+      -- completion = cmp.config.window.bordered(),
+      -- documentation = cmp.config.window.bordered(),
+      },
+    mapping = cmp.mapping.preset.insert({
+
+    ["<Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+                    cmp.select_next_item()
+            elseif luasnip.expand_or_jumpable() then
+                    luasnip.expand_or_jump()
+            elseif has_words_before() then
+                    cmp.complete()
+            else
+                    fallback()
+                    end
+                    end, { "i", "s" }),
+    ["<S-Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+                    cmp.select_prev_item()
+            elseif luasnip.jumpable(-1) then
+                    luasnip.jump(-1)
+            else
+                    fallback()
+                    end
+                    end, { "i", "s" }),
+    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.abort(),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+    }),
+    sources = cmp.config.sources({
+    { name = 'nvim_lsp' },
+    { name = 'vsnip' }, -- For vsnip users.
+    }, {
+            { name = 'buffer' },
+    })
+    })
+
+  -- Set up lspconfig.
+  local capabilities = require('cmp_nvim_lsp').default_capabilities()
+  -- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
+  require('lspconfig')['clojure_lsp'].setup {
+          capabilities = capabilities
+  }
+
+-- Set up telescope projects
+require'telescope'.load_extension('project')
+require("telescope").load_extension('zoxide')
+vim.keymap.set("n", "<leader>cd", require("telescope").extensions.zoxide.list)
+
+vim.g.firenvim_config = {
+    globalSettings = { alt = "all" },
+    localSettings = {
+        [".*"] = {
+            cmdline  = "neovim",
+            content  = "text",
+            priority = 0,
+            selector = 'textarea:not([rows="1"])' ,
+            takeover = "always"
+        }
+    }
+}
+
+
+
+require('diagflow').setup({
+    enable = true,
+    max_width = 60,  -- The maximum width of the diagnostic messages
+    max_height = 10, -- the maximum height per diagnostics
+    severity_colors = {  -- The highlight groups to use for each diagnostic severity level
+        error = "DiagnosticFloatingError",
+        warning = "DiagnosticFloatingWarn",
+        info = "DiagnosticFloatingInfo",
+        hint = "DiagnosticFloatingHint",
+    },
+    format = function(diagnostic)
+      return diagnostic.message
+    end,
+    gap_size = 1,
+    scope = 'cursor', -- 'cursor', 'line' this changes the scope, so instead of showing errors under the cursor, it shows errors on the entire line.
+    padding_top = 2,
+    padding_right = 7,
+    text_align = 'right', -- 'left', 'right'
+    placement = 'top', -- 'top', 'inline'
+    inline_padding_left = 0, -- the padding left when the placement is inline
+    update_event = { 'DiagnosticChanged', 'BufReadPost' }, -- the event that updates the diagnostics cache
+    toggle_event = { }, -- if InsertEnter, can toggle the diagnostics on inserts
+    show_sign = false, -- set to true if you want to render the diagnostic sign before the diagnostic message
+    render_event = { 'DiagnosticChanged', 'CursorMoved' },
+    border_chars = {
+      top_left = "┌",
+      top_right = "┐",
+      bottom_left = "└",
+      bottom_right = "┘",
+      horizontal = "─",
+      vertical = "│"
+    },
+    show_borders = false,
+})
+
+
+require('gitsigns').setup {
+  signs = {
+    add          = { text = '│' },
+    change       = { text = '│' },
+    delete       = { text = '_' },
+    topdelete    = { text = '‾' },
+    changedelete = { text = '~' },
+    untracked    = { text = '┆' },
+  },
+  signcolumn = true,  -- Toggle with `:Gitsigns toggle_signs`
+  numhl      = false, -- Toggle with `:Gitsigns toggle_numhl`
+  linehl     = false, -- Toggle with `:Gitsigns toggle_linehl`
+  word_diff  = false, -- Toggle with `:Gitsigns toggle_word_diff`
+  watch_gitdir = {
+    follow_files = true
+  },
+  auto_attach = true,
+  attach_to_untracked = false,
+  current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
+  current_line_blame_opts = {
+    virt_text = true,
+    virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
+    delay = 1000,
+    ignore_whitespace = false,
+    virt_text_priority = 100,
+  },
+  current_line_blame_formatter = '<author>, <author_time:%Y-%m-%d> - <summary>',
+  sign_priority = 6,
+  update_debounce = 100,
+  status_formatter = nil, -- Use default
+  max_file_length = 40000, -- Disable if file is longer than this (in lines)
+  preview_config = {
+    -- Options passed to nvim_open_win
+    border = 'single',
+    style = 'minimal',
+    relative = 'cursor',
+    row = 0,
+    col = 1
+  },
+  yadm = {
+    enable = false
+  },
+
+  on_attach = function(bufnr)
+    local gs = package.loaded.gitsigns
+
+    local function map(mode, l, r, opts)
+      opts = opts or {}
+      opts.buffer = bufnr
+      vim.keymap.set(mode, l, r, opts)
+    end
+
+    -- Navigation
+    map('n', ']c', function()
+      if vim.wo.diff then return ']c' end
+      vim.schedule(function() gs.next_hunk() end)
+      return '<Ignore>'
+    end, {expr=true})
+
+    map('n', '[c', function()
+      if vim.wo.diff then return '[c' end
+      vim.schedule(function() gs.prev_hunk() end)
+      return '<Ignore>'
+    end, {expr=true})
+
+    -- Actions
+    map('n', '<leader>hs', gs.stage_hunk)
+    map('n', '<leader>hr', gs.reset_hunk)
+    map('v', '<leader>hs', function() gs.stage_hunk {vim.fn.line('.'), vim.fn.line('v')} end)
+    map('v', '<leader>hr', function() gs.reset_hunk {vim.fn.line('.'), vim.fn.line('v')} end)
+    map('n', '<leader>hS', gs.stage_buffer)
+    map('n', '<leader>hu', gs.undo_stage_hunk)
+    map('n', '<leader>hR', gs.reset_buffer)
+    map('n', '<leader>hp', gs.preview_hunk)
+    map('n', '<leader>hb', function() gs.blame_line{full=true} end)
+    map('n', '<leader>tb', gs.toggle_current_line_blame)
+    map('n', '<leader>hd', gs.diffthis)
+    map('n', '<leader>hD', function() gs.diffthis('~') end)
+    map('n', '<leader>td', gs.toggle_deleted)
+
+    -- Text object
+    map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
+  end
+
+};
+
+
+vim.keymap.set('n', '/', ':SearchBoxIncSearch<CR>')
+
+vim.keymap.set('n', '?', ':SearchBoxIncSearch reverse=true<CR>')
+
+
+EOF
+""     '
+
 
 Plug 'ahmedkhalf/project.nvim'
 
-"gpt
-Plug 'MunifTanjim/nui.nvim'
-Plug 'jackMort/ChatGPT.nvim'
-"neogit
-
-Plug 'kabouzeid/nvim-lspinstall'
-Plug 'neovim/nvim-lspconfig'
-"Completion
-Plug 'hrsh7th/cmp-nvim-lsp'
-Plug 'hrsh7th/cmp-buffer'
-Plug 'hrsh7th/cmp-path'
-Plug 'hrsh7th/cmp-cmdline'
-Plug 'hrsh7th/nvim-cmp'
 
 
 
-" For vsnip users.
-Plug 'hrsh7th/cmp-vsnip'
-Plug 'hrsh7th/vim-vsnip'
-
-Plug 'vim-denops/denops.vim'
-
-Plug 'shuntaka9576/preview-asciidoc.vim'
 
 "Git integrations
-Plug 'lewis6991/gitsigns.nvim'
-Plug 'f-person/git-blame.nvim'
-Plug 'sindrets/diffview.nvim'     
 
 "Public
 
 Plug 'Olical/nvim-local-fennel'
 Plug 'Olical/aniseed'
 
-Plug 'axelf4/vim-strip-trailing-whitespace'
-
-" Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
-
-Plug 'kyazdani42/nvim-web-devicons'
-
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
-
-Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 
 
-Plug 'vim-syntastic/syntastic'
-" Plug 'aclaimant/syntastic-joker'
+
+
 Plug 'rhysd/vim-grammarous'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'bling/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
-" If you want to have icons in your statusline choose one of these
 Plug 'nvim-tree/nvim-web-devicons'
 
-Plug 'haya14busa/incsearch.vim'
-Plug 'tomtom/tcomment_vim'
+"Plug 'haya14busa/incsearch.vim'
+"Plug 'tomtom/tcomment_vim'
 Plug 'bling/vim-bufferline'
 Plug 'mattn/emmet-vim'
 Plug 'Yggdroot/indentLine'
@@ -118,12 +456,12 @@ Plug 'lambdalisue/suda.vim'
 "Plug 'wakatime/vim-wakatime'
 "Plug 'ActivityWatch/aw-watcher-vim'
 
-Plug 'nvim-telescope/telescope-fzy-native.nvim'
-Plug 'nvim-telescope/telescope.nvim'
-Plug 'nvim-telescope/telescope-project.nvim'
-Plug 'dawsers/telescope-floaterm.nvim'
-Plug 'jvgrootveld/telescope-zoxide'
-Plug 'nanotee/zoxide.vim'
+""Plug 'nvim-telescope/telescope-fzy-native.nvim'
+""Plug 'nvim-telescope/telescope.nvim'
+""Plug 'nvim-telescope/telescope-project.nvim'
+
+
+
 
 
 Plug 'habamax/vim-asciidoctor'
@@ -147,7 +485,7 @@ Plug 'tpope/vim-dispatch'
 Plug 'lervag/vimtex'
 Plug 'Olical/conjure' , { 'branch': 'develop' }
 Plug 'guns/vim-clojure-static'
-Plug 'luochen1990/rainbow'
+" Plug 'luochen1990/rainbow'
 Plug 'guns/vim-clojure-highlight'
 Plug 'eraserhd/parinfer-rust', {'do':
         \  'cargo build --release'}
@@ -183,7 +521,6 @@ Plug 'mg979/vim-visual-multi'
 "Vim sneak like
 Plug 'folke/flash.nvim'
 
-"Plug 'ggandor/leap.nvim'
 "Haskell
 Plug 'neovimhaskell/haskell-vim'
 Plug 'owickstrom/neovim-ghci'
@@ -216,11 +553,8 @@ Plug 'mfussenegger/nvim-lint'
 "vim history
 Plug 'simnalamburt/vim-mundo'
 
-"neorg
 
-Plug 'nvim-neorg/neorg'
-
-Plug 'nvim-tree/nvim-web-devicons'
+Plug '\'
 
 call plug#end()
 
@@ -552,11 +886,6 @@ hi PmenuSel blend=0
 
 
 
-" asciidoctor
-" let g:asciidoctor_executable = 'asciidoctor'
-"
-" let g:asciidoctor_extensions = ['asciidoctor-mathematical' ,'asciidoctor-diagram', 'asciidoctor-rouge']
-
 
 "let g:conjure_config = {"log.hud.enabled?": v:false}`
 let g:AutoPairsShortcutToggle = ',a'
@@ -685,18 +1014,6 @@ let g:clojure_fuzzy_indent=1
 let g:clojure_align_multiline_strings = 1
 
 
-"Control-P
-let g:ctrlp_show_hidden = 1
-let g:ctrlp_custom_ignore = {
- \ 'dir':  '\v[\/]\.(git|hg|svn|cljs_rhino_repl|)$',
- \ 'file': '\v\.(exe|so|dll|sw.)$',
- \ 'link': 'some_bad_symbolic_links',
- \ }
-
-map /  <Plug>(incsearch-forward)
-map ?  <Plug>(incsearch-backward)
-map g/ <Plug>(incsearch-stay)
-
 
 cnoreabbrev Prl  %!perl -pi -e
 
@@ -745,6 +1062,11 @@ set conceallevel=0
 
 
 lua <<EOF
+
+
+
+
+
 local nvim_lsp = require('lspconfig')
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
@@ -951,40 +1273,12 @@ EOF
 
 map <leader>m <Nop>
 
-nnoremap <silent> <leader>ni  :Neorg index<cr>
-nnoremap <silent> <leader>nr  :Neorg return<cr>
 
 lua <<EOF
 
 if vim.g.started_by_firenvim == true then
  vim.g.firenvim_config.localSettings['.*'] = {selector = 'textarea:not([rows="4"]):not([rows="2"]):not([rows="1"]):not([rows="0"]), textarea:not([type=search])' }
 end
-
-require('neorg').setup {
-    load = {
-     ["core.defaults"] = {},
-     ["core.concealer"] = {  },
-     ["core.integrations.treesitter"]= {},
-     ["core.export"] = {},
-     ["core.ui.calendar"]  = {},
-     ["core.dirman"] = {
-             config = {
-                  workspaces = {
-                    notes= "~/.neorg/notes",
-                    work= "~/.neorg/work"
-                  },
-                  default_workspace = "notes",
-                     }
-             },
-     ["core.keybinds"] = {
-       config = {
-                  default_keybinds = true,
-                  neorg_leader = ",",
-       },
-     },
-   }
-}
-
 
 
 require("conform").setup({
@@ -997,7 +1291,42 @@ require("conform").setup({
     clojure = { "zprint"  },
   },
 })
+
+
+require('lualine').setup()
 EOF
+
+
+
+
+
+command -range=% -nargs=* Floatermkoggle execute "FloatermKill" |  execute "FloatermToggle"
+
+nnoremap   <silent>   <leader>tf    :FloatermNew  --height=0.9 --width=0.9<CR>
+tnoremap   <silent>   <leader>tf    <C-\><C-n>:FloatermNew  --height=0.9 --width=0.9<CR>
+nnoremap   <silent>   <leader>tp    :FloatermPrev<CR>
+tnoremap   <silent>   <leader>tp    <C-\><C-n>:FloatermPrev<CR>
+nnoremap   <silent>   <leader>tn    :FloatermNext<CR>
+tnoremap   <silent>   <leader>tn    <C-\><C-n>:FloatermNext<CR>
+nnoremap   <silent>   <leader>tt    :FloatermToggle<CR>
+tnoremap   <silent>   <leader>tt    <C-\><C-n>:FloatermToggle<CR>
+nnoremap   <silent>   <leader>tk    :Floatermkoggle <C>
+tnoremap   <silent>   <leader>tk    <C-\><C-n>:Floatermkoggle<C>
+nnoremap   <silent>   <leader>tx    :FloatermKill<C>
+tnoremap   <silent>   <leader>tx    <C-\><C-n>:FloatermKill<C>
+nnoremap   <silent>   <leader>tl    :Telescope floaterm<CR>
+tnoremap   <silent>   <leader>tl    <C-\><C-n>:Telescope floaterm<CR>
+nnoremap   <silent>   <leader>ts    :FloatermSend<CR>
+
+tnoremap   <silent>   <leader>tu   <C-\><C-n>:FloatermNew   --height=0.9 --width=0.9  gitui<CR>
+nnoremap   <silent>   <leader>tu    :FloatermNew   --height=0.9 --width=0.9  gitui<CR>
+
+nnoremap   <silent>   <leader>tg    :FloatermNew  --height=0.9 --width=0.9 lazygit<CR>
+tnoremap   <silent>   <leader>tg    <C-\><C-n>:FloatermNew  --height=0.9 --width=0.9 lazygit<CR>
+
+
+
+
 
 
 
@@ -1034,231 +1363,3 @@ EOF
 " end
 "
 
-
-
-command -range=% -nargs=* Floatermkoggle execute "FloatermKill" |  execute "FloatermToggle"
-
-nnoremap   <silent>   <leader>tf    :FloatermNew  --height=0.9 --width=0.9<CR>
-tnoremap   <silent>   <leader>tf    <C-\><C-n>:FloatermNew  --height=0.9 --width=0.9<CR>
-nnoremap   <silent>   <leader>tp    :FloatermPrev<CR>
-tnoremap   <silent>   <leader>tp    <C-\><C-n>:FloatermPrev<CR>
-nnoremap   <silent>   <leader>tn    :FloatermNext<CR>
-tnoremap   <silent>   <leader>tn    <C-\><C-n>:FloatermNext<CR>
-nnoremap   <silent>   <leader>tt    :FloatermToggle<CR>
-tnoremap   <silent>   <leader>tt    <C-\><C-n>:FloatermToggle<CR>
-nnoremap   <silent>   <leader>tk    :Floatermkoggle <C>
-tnoremap   <silent>   <leader>tk    <C-\><C-n>:Floatermkoggle<C>
-nnoremap   <silent>   <leader>tx    :FloatermKill<C>
-tnoremap   <silent>   <leader>tx    <C-\><C-n>:FloatermKill<C>
-nnoremap   <silent>   <leader>tl    :Telescope floaterm<CR>
-tnoremap   <silent>   <leader>tl    <C-\><C-n>:Telescope floaterm<CR>
-nnoremap   <silent>   <leader>ts    :FloatermSend<CR>
-
-tnoremap   <silent>   <leader>tu   <C-\><C-n>:FloatermNew   --height=0.9 --width=0.9  gitui<CR>
-nnoremap   <silent>   <leader>tu    :FloatermNew   --height=0.9 --width=0.9  gitui<CR>
-
-nnoremap   <silent>   <leader>tg    :FloatermNew  --height=0.9 --width=0.9 lazygit<CR>
-tnoremap   <silent>   <leader>tg    <C-\><C-n>:FloatermNew  --height=0.9 --width=0.9 lazygit<CR>
-
-
-
-
-
-lua <<EOF
-  -- Set up nvim-cmp.
-  local cmp = require'cmp'
-
-  cmp.setup({
-    snippet = {
-      -- REQUIRED - you must specify a snippet engine
-      expand = function(args)
-        vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
-        -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-        -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
-        -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
-      end,
-    },
-    window = { experimental = { ghost_text = false },
-      -- completion = cmp.config.window.bordered(),
-      -- documentation = cmp.config.window.bordered(),
-      },
-    mapping = cmp.mapping.preset.insert({
-
-    ["<Tab>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-                    cmp.select_next_item()
-            elseif luasnip.expand_or_jumpable() then
-                    luasnip.expand_or_jump()
-            elseif has_words_before() then
-                    cmp.complete()
-            else
-                    fallback()
-                    end
-                    end, { "i", "s" }),
-    ["<S-Tab>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-                    cmp.select_prev_item()
-            elseif luasnip.jumpable(-1) then
-                    luasnip.jump(-1)
-            else
-                    fallback()
-                    end
-                    end, { "i", "s" }),
-    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping.complete(),
-    ['<C-e>'] = cmp.mapping.abort(),
-    ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-    }),
-    sources = cmp.config.sources({
-    { name = 'nvim_lsp' },
-    { name = 'vsnip' }, -- For vsnip users.
-    }, {
-            { name = 'buffer' },
-    })
-    })
-
-  -- Set up lspconfig.
-  local capabilities = require('cmp_nvim_lsp').default_capabilities()
-  -- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
-  require('lspconfig')['clojure_lsp'].setup {
-          capabilities = capabilities
-  }
-
--- Set up telescope projects
-require'telescope'.load_extension('project')
-require("telescope").load_extension('zoxide')
-vim.keymap.set("n", "<leader>cd", require("telescope").extensions.zoxide.list)
-
-vim.g.firenvim_config = {
-    globalSettings = { alt = "all" },
-    localSettings = {
-        [".*"] = {
-            cmdline  = "neovim",
-            content  = "text",
-            priority = 0,
-            selector = 'textarea:not([rows="1"])' ,
-            takeover = "always"
-        }
-    }
-}
-
-require('gitsigns').setup {
-  signs = {
-    add          = { text = '│' },
-    change       = { text = '│' },
-    delete       = { text = '_' },
-    topdelete    = { text = '‾' },
-    changedelete = { text = '~' },
-    untracked    = { text = '┆' },
-  },
-  signcolumn = true,  -- Toggle with `:Gitsigns toggle_signs`
-  numhl      = false, -- Toggle with `:Gitsigns toggle_numhl`
-  linehl     = false, -- Toggle with `:Gitsigns toggle_linehl`
-  word_diff  = false, -- Toggle with `:Gitsigns toggle_word_diff`
-  watch_gitdir = {
-    follow_files = true
-  },
-  auto_attach = true,
-  attach_to_untracked = false,
-  current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
-  current_line_blame_opts = {
-    virt_text = true,
-    virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
-    delay = 1000,
-    ignore_whitespace = false,
-    virt_text_priority = 100,
-  },
-  current_line_blame_formatter = '<author>, <author_time:%Y-%m-%d> - <summary>',
-  sign_priority = 6,
-  update_debounce = 100,
-  status_formatter = nil, -- Use default
-  max_file_length = 40000, -- Disable if file is longer than this (in lines)
-  preview_config = {
-    -- Options passed to nvim_open_win
-    border = 'single',
-    style = 'minimal',
-    relative = 'cursor',
-    row = 0,
-    col = 1
-  },
-  yadm = {
-    enable = false
-  },
-
-  on_attach = function(bufnr)
-    local gs = package.loaded.gitsigns
-
-    local function map(mode, l, r, opts)
-      opts = opts or {}
-      opts.buffer = bufnr
-      vim.keymap.set(mode, l, r, opts)
-    end
-
-    -- Navigation
-    map('n', ']c', function()
-      if vim.wo.diff then return ']c' end
-      vim.schedule(function() gs.next_hunk() end)
-      return '<Ignore>'
-    end, {expr=true})
-
-    map('n', '[c', function()
-      if vim.wo.diff then return '[c' end
-      vim.schedule(function() gs.prev_hunk() end)
-      return '<Ignore>'
-    end, {expr=true})
-
-    -- Actions
-    map('n', '<leader>hs', gs.stage_hunk)
-    map('n', '<leader>hr', gs.reset_hunk)
-    map('v', '<leader>hs', function() gs.stage_hunk {vim.fn.line('.'), vim.fn.line('v')} end)
-    map('v', '<leader>hr', function() gs.reset_hunk {vim.fn.line('.'), vim.fn.line('v')} end)
-    map('n', '<leader>hS', gs.stage_buffer)
-    map('n', '<leader>hu', gs.undo_stage_hunk)
-    map('n', '<leader>hR', gs.reset_buffer)
-    map('n', '<leader>hp', gs.preview_hunk)
-    map('n', '<leader>hb', function() gs.blame_line{full=true} end)
-    map('n', '<leader>tb', gs.toggle_current_line_blame)
-    map('n', '<leader>hd', gs.diffthis)
-    map('n', '<leader>hD', function() gs.diffthis('~') end)
-    map('n', '<leader>td', gs.toggle_deleted)
-
-    -- Text object
-    map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
-  end
-
-};
-local config = {
-        api_key_cmd="",
-        -- api_host_cmd="echo '10.1.0.1:31416'",
-        -- extra_curl_params = { "--cacert","C:\\Users\\chris\\.ssh\\local\\local.chat-gpt-key.pem", "--insecure"},
-     openai_params = {
-      model = "gpt-3.5-turbo",
-      frequency_penalty = 0,
-      presence_penalty = 0,
-      max_tokens = 1500,
-      temperature = 0,
-      top_p = 1,
-      n = 1,
-    }
-
-}
----require("lazy").setup(
----{
----  "folke/flash.nvim",
----  event = "VeryLazy",
----  ---@type Flash.Config
----  opts = {},
----  -- stylua: ignore
----  keys = {
----    { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
----    { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
----    { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
----    { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
----    { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
----  },
----} )
-
-
-
-EOF
