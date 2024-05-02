@@ -2,34 +2,6 @@ set rtp+=C:\Users\chris\AppData\Local\nvim
 
 call plug#begin('C:\Users\chris\AppData\Local\nvim\plugged')
 
-function! BuildComposer(info)
-  if a:info.status != 'unchanged' || a:info.force
-    if has('nvim')
-      !cargo build --release --locked
-    else
-      !cargo build --release --locked --no-default-features --features json-rpc
-    endif
-  endif
-endfunction
-
-
-function! Cc()
-  let buffers = map(copy(getbufinfo()), 'v:val.bufnr')
-  for bf in buffers
-    let l:cnlog = bufname(bf)
-    let matchs = matchstr(l:cnlog, ".*njure-log.*")
-    if matchs == ''
-    else
-      let l:bufnr = bufnr('')
-       execute 'noautocmd keepalt buffer' bf
-       execute  'ColorHighlight'
-       execute 'noautocmd keepalt buffer' l:bufnr
-    endif
-  endfor
-endfunction
-
-"Dependencies
-
 Plug 'folke/lazy.nvim'
 
 lua <<EOF
@@ -64,7 +36,9 @@ local chatgpt_config  = {
 
 
 require("lazy").setup ({"nvim-lua/plenary.nvim","kabouzeid/nvim-lspinstall", "dgagn/diagflow.nvim", 'jvgrootveld/telescope-zoxide',
-'kdheepak/lazygit.nvim',  "vim-syntastic/syntastic",
+"ggandor/leap.nvim",
+'kdheepak/lazygit.nvim',
+"vim-syntastic/syntastic",
 "HiPhish/rainbow-delimiters.nvim" ,
 "RRethy/vim-hexokinase",
 "m4xshen/autoclose.nvim",
@@ -82,7 +56,6 @@ require("lazy").setup ({"nvim-lua/plenary.nvim","kabouzeid/nvim-lspinstall", "dg
 {"VonHeikemen/fine-cmdline.nvim", dependencies={"MunifTanjim/nui.nvim"}},
 {"VonHeikemen/searchbox.nvim", dependencies={"MunifTanjim/nui.nvim"}}, 
 { 'nvim-treesitter/nvim-treesitter',  cmd="TSUpdate"}, "nvim-treesitter/nvim-treesitter-textobjects",
-
  {
     'nvim-lualine/lualine.nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' }
@@ -166,6 +139,7 @@ require("lazy").setup ({"nvim-lua/plenary.nvim","kabouzeid/nvim-lspinstall", "dg
 }
 
 });
+ require('leap').create_default_mappings()
 require("autoclose").setup()
 local rainbow_delimiters = require("rainbow-delimiters" )
 
@@ -411,8 +385,6 @@ Plug 'ahmedkhalf/project.nvim'
 
 
 
-
-
 "Git integrations
 
 "Public
@@ -431,49 +403,34 @@ Plug 'vim-airline/vim-airline-themes'
 
 Plug 'nvim-tree/nvim-web-devicons'
 
-"Plug 'haya14busa/incsearch.vim'
-"Plug 'tomtom/tcomment_vim'
 Plug 'bling/vim-bufferline'
 Plug 'mattn/emmet-vim'
 Plug 'Yggdroot/indentLine'
 Plug 'vimlab/split-term.vim'
-" Plug 'chrisbra/Colorizer'
 Plug 'marko-cerovac/material.nvim'
 
 Plug 'powerman/vim-plugin-AnsiEsc'
 
-" Plug 'Valloric/MatchTagAlways'
-" Plug 'lilydjwg/colorizer'
 
 Plug  'RRethy/vim-hexokinase'
 
 Plug 'roxma/vim-tmux-clipboard'
 Plug 'roxma/nvim-yarp'
 
-Plug 'davidgranstrom/nvim-markdown-preview'
 Plug 'lambdalisue/suda.vim'
 "Activity tracking
 "Plug 'wakatime/vim-wakatime'
 "Plug 'ActivityWatch/aw-watcher-vim'
 
-""Plug 'nvim-telescope/telescope-fzy-native.nvim'
-""Plug 'nvim-telescope/telescope.nvim'
-""Plug 'nvim-telescope/telescope-project.nvim'
 
 
 
 
 
-Plug 'habamax/vim-asciidoctor'
 Plug 'jiangmiao/auto-pairs'
 
 Plug 'norcalli/nvim-terminal.lua'
 
-Plug 'euclio/vim-markdown-composer', { 'do': function('BuildComposer') }
-
-
-
-" Plug 'rust-lang/rust.vim'
 
 Plug 'ionide/Ionide-vim', {
       \ 'do':  'make fsautocomplete',
@@ -515,8 +472,6 @@ Plug 'hellerve/carp-vim'
 Plug 'nanotee/sqls.nvim'
 
 
-" multiple cursors
-Plug 'mg979/vim-visual-multi'
 
 "Vim sneak like
 Plug 'folke/flash.nvim'
@@ -692,9 +647,6 @@ nmap - :resize -2<CR>
 
 nnoremap <SPACE> <Nop>
 nnoremap Q <Nop>
-" nnoremap s <Nop>
-" nnoremap S <Nop>
-
 
 let mapleader=" "
 
@@ -1363,3 +1315,24 @@ tnoremap   <silent>   <leader>tg    <C-\><C-n>:FloatermNew  --height=0.9 --width
 " end
 "
 
+
+
+" function! Cc()
+"   let buffers = map(copy(getbufinfo()), 'v:val.bufnr')
+"   for bf in buffers
+"     let l:cnlog = bufname(bf)
+"     let matchs = matchstr(l:cnlog, ".*njure-log.*")
+"     if matchs == ''
+"     else
+"       let l:bufnr = bufnr('')
+"        execute 'noautocmd keepalt buffer' bf
+"        execute  'ColorHighlight'
+"        execute 'noautocmd keepalt buffer' l:bufnr
+"     endif
+"   endfor
+" endfunction
+
+"Dependencies
+
+" nnoremap s <Nop>
+" nnoremap S <Nop>
