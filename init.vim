@@ -207,7 +207,6 @@ Plug 'simnalamburt/vim-mundo'
 
 "neorg
 
-Plug 'nvim-neorg/neorg'
 
 Plug 'nvim-tree/nvim-web-devicons'
 
@@ -996,8 +995,6 @@ EOF
 
 map <leader>m <Nop>
 
-nnoremap <silent> <leader>ni  :Neorg index<cr>
-nnoremap <silent> <leader>nr  :Neorg return<cr>
 
 lua <<EOF
 
@@ -1005,30 +1002,6 @@ if vim.g.started_by_firenvim == true then
  vim.g.firenvim_config.localSettings['.*'] = {selector = 'textarea:not([rows="4"]):not([rows="2"]):not([rows="1"]):not([rows="0"]), textarea:not([type=search])' }
 end
 
-require('neorg').setup {
-    load = {
-     ["core.defaults"] = {},
-     ["core.concealer"] = {  },
-     ["core.integrations.treesitter"]= {},
-     ["core.export"] = {},
-     ["core.ui.calendar"]  = {},
-     ["core.dirman"] = {
-             config = {
-                  workspaces = {
-                    notes= "~/.neorg/notes",
-                    work= "~/.neorg/work"
-                  },
-                  default_workspace = "notes",
-                     }
-             },
-     ["core.keybinds"] = {
-       config = {
-                  default_keybinds = true,
-                  neorg_leader = ",",
-       },
-     },
-   }
-}
 
 EOF
 
