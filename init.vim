@@ -30,9 +30,18 @@ endfunction
 
 "Dependencies
 
+Plug 'MunifTanjim/nui.nvim',
+Plug 'nvim-lua/plenary.nvim'
+Plug 'folke/trouble.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+
+
+Plug 'jackMort/ChatGPT.nvim'
+
 Plug 'kdheepak/lazygit.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'voldikss/vim-floaterm'
+Plug 'dgagn/diagflow.nvim'
 
 Plug 'ahmedkhalf/project.nvim'
 
@@ -44,9 +53,10 @@ Plug 'Exafunction/codeium.vim'
 
 
 Plug 'lewis6991/gitsigns.nvim'
-Plug 'f-person/git-blame.nvim'
+" Plug 'f-person/git-blame.nvim'
 Plug 'sindrets/diffview.nvim'     
 
+Plug 'ggandor/leap.nvim'
 "Public
 
 Plug 'Olical/nvim-local-fennel'
@@ -62,10 +72,9 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend upda
 
 Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 
+Plug 'neovim/nvim-lspconfig'
 
 Plug 'kabouzeid/nvim-lspinstall'
-
-Plug 'neovim/nvim-lspconfig'
 
 Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
 Plug 'ms-jpq/coq.artifacts', {'branch': 'artifacts'}
@@ -128,9 +137,9 @@ Plug 'euclio/vim-markdown-composer', { 'do': function('BuildComposer') }
 
 " Plug 'rust-lang/rust.vim'
 
-Plug 'ionide/Ionide-vim', {
-      \ 'do':  'make fsautocomplete',
-      \}
+" Plug 'ionide/Ionide-vim', {
+"       \ 'do':  'make fsautocomplete',
+"       \}
 Plug 'pest-parser/pest.vim'
 
 Plug 'tpope/vim-dispatch'
@@ -218,6 +227,39 @@ Plug 'kristijanhusak/vim-dadbod-ui'
 
 
 call plug#end()
+
+
+lua << EOF
+local coq = require "coq" -- add this
+
+require('lspconfig.configs').postgres_lsp = {
+  default_config = {
+    name = 'postgres_lsp',
+    cmd = {'postgres_lsp'},
+    filetypes = {'sql'},
+    single_file_support = true,
+  }
+}
+
+-- require'lspconfig'.clojure_lsp.setup{ coq.lsp_ensure_capabilities{} }
+require'lspconfig'.postgres_lsp.setup{ coq.lsp_ensure_capabilities{} }
+require'lspconfig'.texlab.setup{ coq.lsp_ensure_capabilities{} }
+require'lspconfig'.pyright.setup{ coq.lsp_ensure_capabilities{} }
+require'lspconfig'.ccls.setup{ coq.lsp_ensure_capabilities{} }
+require'lspconfig'.rust_analyzer.setup{coq.lsp_ensure_capabilities{}}
+require'lspconfig'.sqlls.setup{ coq.lsp_ensure_capabilities{} }
+
+require("coq_3p")
+{
+        { src = "codeium", short_name = "COD" },
+
+        {src ="vim_dadbod_completion",sort_name ="DB" }
+
+}
+
+vim.g.codeium_render = true
+
+EOF
 
 
 let g:aniseed#env = v:true
@@ -356,8 +398,8 @@ map <leader>- <C-w>-
 
 nnoremap <SPACE> <Nop>
 nnoremap Q <Nop>
-nnoremap s <Nop>
-nnoremap S <Nop>
+" nnoremap s <Nop>
+" nnoremap S <Nop>
 
 
 let mapleader=" "
@@ -617,10 +659,10 @@ let g:colorizer_disable_bufleave = 1
 map + <C-w>>
 map - <C-w><
 
-"colorscheme zenburn
-" colorscheme nord
-"colorscheme tender
+" colorscheme zenburn
 colorscheme melange
+" colorscheme nord
+" "colorscheme tender
 "au ColorScheme * hi Normal ctermgb=
 hi Normal guibg=grey19
 
@@ -752,33 +794,7 @@ set conceallevel=0
 "
 "EOF
 
-lua << EOF
-local coq = require "coq" -- add this
 
-require('lspconfig.configs').postgres_lsp = {
-  default_config = {
-    name = 'postgres_lsp',
-    cmd = {'postgres_lsp'},
-    filetypes = {'sql'},
-    single_file_support = true,
-  }
-}
-
-require'lspconfig'.clojure_lsp.setup{ coq.lsp_ensure_capabilities{} }
-require'lspconfig'.postgres_lsp.setup{ coq.lsp_ensure_capabilities{} }
-require'lspconfig'.texlab.setup{ coq.lsp_ensure_capabilities{} }
-require'lspconfig'.pyright.setup{ coq.lsp_ensure_capabilities{} }
-require'lspconfig'.ccls.setup{ coq.lsp_ensure_capabilities{} }
-require'lspconfig'.rust_analyzer.setup{coq.lsp_ensure_capabilities{}}
-require'lspconfig'.sqlls.setup{ coq.lsp_ensure_capabilities{} }
-
-require("coq_3p")
-{
-        { src = "codeium", short_name = "COD" },
-        {src ="vim_dadbod_completion",sort_name ="DB" }
-}
-
-EOF
 
 lua <<EOF
 local nvim_lsp = require('lspconfig')
@@ -818,13 +834,14 @@ end
 
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
+
 local servers = { 'clojure_lsp', 'postgres_lsp' }
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup {
      coq.lsp_ensure_capabilities{} ,
     on_attach = on_attach,
     flags = {
-      debounce_text_changes = 150,
+      debounce_text_changes = 15,
     }
   }
 end
@@ -834,7 +851,6 @@ vim.cmd([[COQnow]])
 
 EOF
 
-
 lua << EOF
 
 
@@ -842,7 +858,7 @@ lua << EOF
 
 require'nvim-treesitter.configs'.setup {
   -- One of "all", "maintained" (parsers with maintainers), or a list of languages
-  ensure_installed = {"clojure", "lua", "rust",  "java",  "kotlin"}  ,
+  ensure_installed = {"clojure", "lua", "rust",  "java",  "kotlin", "zig"}  ,
 
   -- Install languages synchronously (only applied to `ensure_installed`)
   sync_install = false,
@@ -1007,25 +1023,25 @@ EOF
 
 command -range=% -nargs=* Floatermkoggle execute "FloatermKill" |  execute "FloatermToggle"
 
-nnoremap   <silent>   <leader>tf    :FloatermNew  --height=0.9 --width=0.9<CR>
-tnoremap   <silent>   <leader>tf    <C-\><C-n>:FloatermNew  --height=0.9 --width=0.9<CR>
-nnoremap   <silent>   <leader>tp    :FloatermPrev<CR>
-tnoremap   <silent>   <leader>tp    <C-\><C-n>:FloatermPrev<CR>
-nnoremap   <silent>   <leader>tn    :FloatermNext<CR>
-tnoremap   <silent>   <leader>tn    <C-\><C-n>:FloatermNext<CR>
-nnoremap   <silent>   <leader>tt    :FloatermToggle<CR>
-tnoremap   <silent>   <leader>tt    <C-\><C-n>:FloatermToggle<CR>
-nnoremap   <silent>   <leader>tk    :Floatermkoggle <C>
-tnoremap   <silent>   <leader>tk    <C-\><C-n>:Floatermkoggle<C>
-nnoremap   <silent>   <leader>tx    :FloatermKill<C>
-tnoremap   <silent>   <leader>tx    <C-\><C-n>:FloatermKill<C>
-nnoremap   <silent>   <leader>tl    :Telescope floaterm<CR>
-tnoremap   <silent>   <leader>tl    <C-\><C-n>:Telescope floaterm<CR>
-nnoremap   <silent>   <leader>ts    :FloatermSend<CR>
-tnoremap   <silent>   <leader>tu   <C-\><C-n>:FloatermNew   --height=0.9 --width=0.9  gitui<CR>
-nnoremap   <silent>   <leader>tu    :FloatermNew   --height=0.9 --width=0.9  gitui<CR>
-nnoremap   <silent>   <leader>tg    :FloatermNew  --height=0.9 --width=0.9 lazygit<CR>
-tnoremap   <silent>   <leader>tg    <C-\><C-n>:FloatermNew  --height=0.9 --width=0.9 lazygit<CR>
+" nnoremap   <silent>   <leader>tf    :FloatermNew  --height=0.9 --width=0.9<CR>
+" tnoremap   <silent>   <leader>tf    <C-\><C-n>:FloatermNew  --height=0.9 --width=0.9<CR>
+" nnoremap   <silent>   <leader>tp    :FloatermPrev<CR>
+" tnoremap   <silent>   <leader>tp    <C-\><C-n>:FloatermPrev<CR>
+" nnoremap   <silent>   <leader>tn    :FloatermNext<CR>
+" tnoremap   <silent>   <leader>tn    <C-\><C-n>:FloatermNext<CR>
+" nnoremap   <silent>   <leader>tt    :FloatermToggle<CR>
+" tnoremap   <silent>   <leader>tt    <C-\><C-n>:FloatermToggle<CR>
+" nnoremap   <silent>   <leader>tk    :Floatermkoggle <C>
+" tnoremap   <silent>   <leader>tk    <C-\><C-n>:Floatermkoggle<C>
+" nnoremap   <silent>   <leader>tx    :FloatermKill<C>
+" tnoremap   <silent>   <leader>tx    <C-\><C-n>:FloatermKill<C>
+" nnoremap   <silent>   <leader>tl    :Telescope floaterm<CR>
+" tnoremap   <silent>   <leader>tl    <C-\><C-n>:Telescope floaterm<CR>
+" nnoremap   <silent>   <leader>ts    :FloatermSend<CR>
+" tnoremap   <silent>   <leader>tu   <C-\><C-n>:FloatermNew   --height=0.9 --width=0.9  gitui<CR>
+" nnoremap   <silent>   <leader>tu    :FloatermNew   --height=0.9 --width=0.9  gitui<CR>
+" nnoremap   <silent>   <leader>tg    :FloatermNew  --height=0.9 --width=0.9 lazygit<CR>
+" tnoremap   <silent>   <leader>tg    <C-\><C-n>:FloatermNew  --height=0.9 --width=0.9 lazygit<CR>
 
 
 let g:rooter_manual_only = 1
@@ -1069,15 +1085,15 @@ require('gitsigns').setup {
   },
   auto_attach = true,
   attach_to_untracked = false,
-  current_line_blame = false , -- Toggle with `:Gitsigns toggle_current_line_blame`
+  current_line_blame = true, -- Toggle with `:Gitsigns toggle_current_line_blame`
   current_line_blame_opts = {
     virt_text = true,
     virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
-    delay = 1000,
+    delay = 100,
     ignore_whitespace = false,
     virt_text_priority = 100,
   },
-  current_line_blame_formatter = '<author>, <author_time:%Y-%m-%d> - <summary>',
+  current_line_blame_formatter = '                         <author>, <author_time:%d-%m-%Y> - <summary>',
   sign_priority = 6,
   update_debounce = 100,
   status_formatter = nil, -- Use default
@@ -1138,7 +1154,77 @@ require('gitsigns').setup {
 }
 require("project_nvim").setup { }
 
+
+
+require('diagflow').setup({
+    enable = true,
+    max_width = 60,  -- The maximum width of the diagnostic messages
+    max_height = 10, -- the maximum height per diagnostics
+    severity_colors = {  -- The highlight groups to use for each diagnostic severity level
+        error = "DiagnosticFloatingError",
+        warning = "DiagnosticFloatingWarn",
+        info = "DiagnosticFloatingInfo", hint = "DiagnosticFloatingHint",
+    },
+    format = function(diagnostic)
+      return diagnostic.message
+    end,
+    gap_size = 1,
+    scope = 'cursor', -- 'cursor', 'line' this changes the scope, so instead of showing errors under the cursor, it shows errors on the entire line.
+    padding_top = 2,
+    padding_right = 20,
+    text_align = 'right', -- 'left', 'right'
+    placement = 'top', -- 'top', 'inline'
+    inline_padding_left = 0, -- the padding left when the placement is inline
+    update_event = { 'DiagnosticChanged', 'BufReadPost' }, -- the event that updates the diagnostics cache
+    toggle_event = { }, -- if InsertEnter, can toggle the diagnostics on inserts
+    show_sign = false, -- set to true if you want to render the diagnostic sign before the diagnostic message
+    render_event = { 'DiagnosticChanged', 'CursorMoved' },
+    border_chars = {
+      top_left = "┌",
+      top_right = "┐",
+      bottom_left = "└",
+      bottom_right = "┘",
+      horizontal = "─",
+      vertical = "│"
+    },
+    show_borders = false,
+})
+
+require('leap').create_default_mappings()
 --  require('telescope').load_extension('projects')
+
+
+
+local chatgpt_config  = {
+
+        api_key_cmd = 'cat /home/vainamietzsche/.config/nvim/openai_key" | echo',
+        openai_params = {
+                model = "gpt-3.5-turbo",
+                frequency_penalty = 0,
+                presence_penalty = 0,
+                max_tokens = 1500,
+                temperature = 0,
+                top_p = 1,
+                n = 1,
+        }
+        }
+
+
+require("chatgpt").setup(chatgpt_config)
+
 
 EOF
 
+let g:codeium_no_map_tab=1
+imap <script><silent><nowait><expr> <C-g> codeium#Accept()
+imap <C-;>   <Cmd>call codeium#CycleCompletions(1)<CR>
+imap <C-,>   <Cmd>call codeium#CycleCompletions(-1)<CR>
+imap <C-x>   <Cmd>call codeium#Clear()<CR>
+
+ nnoremap <silent> <C-L> :nohlsearch<CR><C-L>
+
+
+
+
+highlight clear GitSignsCurrentLineBlame
+highlight GitSignsCurrentLineBlame  guifg=#695517" guibg=#ffff00
