@@ -30,11 +30,13 @@ endfunction
 
 "Dependencies
 
+Plug  'rcarriga/nvim-notify'
+Plug  'folke/noice.nvim'
 Plug 'MunifTanjim/nui.nvim',
 Plug 'nvim-lua/plenary.nvim'
 Plug 'folke/trouble.nvim'
 Plug 'nvim-telescope/telescope.nvim'
-
+Plug         'brenton-leighton/multiple-cursors.nvim'
 
 Plug 'jackMort/ChatGPT.nvim'
 
@@ -134,7 +136,6 @@ Plug 'norcalli/nvim-terminal.lua'
 Plug 'euclio/vim-markdown-composer', { 'do': function('BuildComposer') }
 
 
-
 " Plug 'rust-lang/rust.vim'
 
 " Plug 'ionide/Ionide-vim', {
@@ -180,7 +181,6 @@ Plug 'nanotee/sqls.nvim'
 
 
 " multiple cursors
-Plug 'mg979/vim-visual-multi'
 
 "Haskell
 Plug 'neovimhaskell/haskell-vim'
@@ -294,7 +294,7 @@ set noswapfile
 set nowritebackup
 set nowrap
 set nofoldenable "disable folding
-set lazyredraw
+" set lazyredraw
 set expandtab           " Insert spaces when TAB is pressed.
 set ignorecase          " Make searching case insensitive
 set smartcase           " ... unless the query has capital letters.
@@ -1088,12 +1088,12 @@ require('gitsigns').setup {
   current_line_blame = true, -- Toggle with `:Gitsigns toggle_current_line_blame`
   current_line_blame_opts = {
     virt_text = true,
-    virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
+    virt_text_pos = 'right_align', -- 'eol' | 'overlay' | 'right_align'
     delay = 100,
     ignore_whitespace = false,
     virt_text_priority = 100,
   },
-  current_line_blame_formatter = '                         <author>, <author_time:%d-%m-%Y> - <summary>',
+  current_line_blame_formatter = '  <author>, <author_time:%d-%m-%Y> - <summary>            ',
   sign_priority = 6,
   update_debounce = 100,
   status_formatter = nil, -- Use default
@@ -1212,8 +1212,32 @@ local chatgpt_config  = {
 
 require("chatgpt").setup(chatgpt_config)
 
+require("noice").setup(
+
+{
+        cmdline={
+        format = {
+                search_down = {
+                        view="cmdline",
+
+                },
+                search_up = {
+                        view="cmdline",
+                },
+        },
+        },
+        -- messages={
+        -- enabled = true,
+        --         view = "mini",
+        --         view_error = "notify",
+        --         view_warn = "notify",
+        --         view_history = "mini",
+        --         view_search = "mini",
+        -- },
+         })
 
 EOF
+
 
 let g:codeium_no_map_tab=1
 imap <script><silent><nowait><expr> <C-g> codeium#Accept()
@@ -1228,3 +1252,4 @@ imap <C-x>   <Cmd>call codeium#Clear()<CR>
 
 highlight clear GitSignsCurrentLineBlame
 highlight GitSignsCurrentLineBlame  guifg=#695517" guibg=#ffff00
+
